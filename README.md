@@ -10,7 +10,7 @@ A Django-based web application for managing and browsing books.
 ### 1️⃣ Clone the repository  
 ```bash
 git clone https://github.com/Ghalia789/Catalogue_livres.git
-cd django-catalogue-livres
+cd Catalogue_livres
 ```
 ### 2️⃣ Create & activate a virtual environment 
 ```bash
