@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from .models import Book
 from .forms import BookForm
 
@@ -38,3 +39,10 @@ def book_update(request, id):
         form = BookForm(instance=book)
 
     return render(request, 'livres/book_update.html', {'form': form, 'book': book})
+
+def delete_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == "POST":
+        book.delete()
+        return redirect(reverse('book_list'))
+    return redirect(reverse('book_list'))
