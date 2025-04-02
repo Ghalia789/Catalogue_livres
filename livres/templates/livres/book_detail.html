@@ -7,20 +7,25 @@
     <h1 class="text-center mb-4">📚 Book Details</h1>
     
     <div class="book-detail-container">
-        <!-- Buttons (Back to Collection on the left, Edit on the right) -->
         <div class="d-flex justify-content-between mb-3">
             <!-- Button to Return (Left) -->
             <a href="{% url 'book_list' %}" class="book-detail-btn">Back to Collection</a>
-
-            <!-- Edit Button (Right) -->
-            <a href="{% url 'book_update' book.id %}" class="btn btn-sm btn-warning d-flex align-items-center justify-content-center">
-                <i class="fas fa-edit"></i> Edit Book
-            </a>
+            {# Only show the Edit and Delete buttons if the user is an admin (superuser) #}
+            {#{% if request.user.is_superuser %}#}
+            <!-- Right-aligned Buttons (Edit & Delete) -->
+            <div class="d-flex gap-2">
+                <a href="{% url 'book_update' book.id %}" class="btn btn-sm btn-warning d-flex align-items-center justify-content-center rounded-2">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <button type="button" class="btn btn-sm btn-danger rounded-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{ book.id }}">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+            {#{% endif %}#}
         </div>
 
         <!-- Book Detail Section -->
         <div class="d-flex align-items-start">
-            
             <!-- Book Cover -->
             <div class="book-detail-cover-wrapper">
                 {% if book.cover_image %}
@@ -34,27 +39,41 @@
 
             <!-- Book Details -->
             <div class="book-detail-info ml-4">
-                <!-- Book Title -->
                 <h2 class="book-detail-title">{{ book.title }}</h2>
-                
-                <!-- Author and Genre -->
                 <p class="book-detail-author">Author: {{ book.author }}</p>
                 <p class="book-detail-genre">Genre: {{ book.genre }}</p>
-                
-                <!-- Meta Information -->
                 <div class="book-detail-meta">
                     <span class="published-date">📅 Published: {{ book.published_date }}</span> |
                     <span class="rating">⭐ Rating: {{ book.average_rating|default:"N/A" }}</span>
                 </div>
-
-                <!-- Book Description -->
                 <div class="book-detail-description">
                     <p>{{ book.description|linebreaks|default:"No description available." }}</p>
                 </div>
-
-                
             </div>
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal{{ book.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete "<strong>{{ book.title }}</strong>"?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="{% url 'book_delete' book.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
