@@ -5,8 +5,11 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="text-center mb-4">📚 Book Collection</h1>
+    {# Only show the Add button if the user is an admin (superuser) #}
+    {#{% if request.user.is_superuser %}#}
     <a href="{% url 'book_create' %}" class="btn btn-add-book mb-3">➕ Add New Book</a>
-
+    {#{% endif %}#}
+    
     {% if books %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for book in books %}
