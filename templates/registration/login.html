@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card book-card shadow-lg">
+                <div class="card-header text-center py-4" style="background-color: var(--navbar-color);">
+                    <h2 class="text-white mb-1">Login</h2>
+                    <p class="mini-subtitle1 text-light">Welcome back book lover</p>
+                </div>
+                <div class="card-body px-5 py-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="id_username" class="form-label fw-bold">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" name="username" class="form-control form-control-lg" id="id_username" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label fw-bold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" name="password" class="form-control form-control-lg" id="id_password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mt-3">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </button>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <p class="mb-2">Don't have an account? 
+                            <a href="{% url 'register' %}" class="fw-bold" style="color: var(--secondary-color);">
+                                Register here
+                            </a>
+                        </p>
+                        <a href="{% url 'passwordreset' %}" class="text-decoration-none fw-bold" style="color: var(--secondary-color);">
+                            <i class="fas fa-key me-1"></i> Forgot password?
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

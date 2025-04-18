@@ -1,0 +1,289 @@
+:root {
+    --primary-color: #2E1A47; /* Deep Purple */
+    --secondary-color: #A57CF5; /* Lavender */
+    --accent-color: #FFD700; /* Gold */
+    --navbar-color: #4B0082; /* Indigo */
+    --light-section: #E6E6FA; /* Soft Lilac */
+    --text-color: #000000; /* Black */
+    --soft-pink: #FFC9D4; /* Soft Pink */
+    --warm-pink: #C08497; /* Warm Muted Pink */
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
+}
+
+.navbar {
+    background-color: var(--navbar-color) !important;
+}
+
+.navbar a, .navbar-brand {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    color: #E6E6FA !important; /* Soft Lilac (lightest lavender) */
+}
+.navbar .navbar-brand, 
+.navbar .nav-link {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    color: #E6E6FA !important; /* Soft Lilac */
+}
+.navbar a:hover {
+    color: #FFD700 !important; /* Gold on hover for better contrast */
+}
+.navbar .btn-primary {
+    background-color: var(--secondary-color); /* Lavender */
+    border-color: var(--secondary-color);
+    font-weight: bold;
+    padding: 6px 15px;
+    border-radius: 8px;
+    color: white; /* Ensure text is readable */
+}
+
+.navbar .btn-primary:hover {
+    background-color: var(--accent-color); /* Gold */
+    border-color: var(--accent-color);
+    color: var(--primary-color) !important; /* Deep Purple text for contrast */
+}
+
+
+.btn {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    color: var(--text-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.card {
+    background: linear-gradient(to bottom, #E6E6FA, #FFC4D4) !important; /* Lilac to Soft Pink */    color: var(--text-color); /* Keep normal text black */
+    border: 1px solid var(--accent-color);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+.card h1, .card h2 {
+    color: var(--warm-pink) !important; /* Soft Pink for readability */
+    font-weight: bold;
+}
+.card h1 {
+    text-shadow: 1px 1px 2px var(--accent-color); /* Gold glow */
+}
+.card-header {
+    background-color: var(--secondary-color) !important;
+    color: var(--text-color);
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF !important; /* White text for titles */
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+}
+.mini-subtitle1 {
+    color: var(--soft-pink);
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.btn-add-book {
+    background-color: var(--soft-pink) !important; /* Soft Pink for the background */
+    border-color: var(--soft-pink) !important;     /* Match the border to the background */
+    color: var(--text-color) !important;           /* Ensure text is readable */
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+
+.btn-add-book:hover {
+    background-color: var(--warm-pink) !important; /* Warm Pink for hover */
+    border-color: var(--warm-pink) !important;     /* Match the border to the hover background */
+    color: var(--text-color) !important;           /* Ensure text color remains consistent */
+}
+
+/* Book Collection Card Enhancements */
+.book-card {
+    background: linear-gradient(to bottom, var(--light-section), var(--warm-pink)) !important;
+    color: var(--text-color); /* Text color for the card */
+    border: 1px solid var(--accent-color);
+    border-radius: 15px; /* Round the corners for a softer look */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.book-card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px 15px 0 0; /* Rounded corners on top */
+    height: 250px;
+    background-color: #f5f5f5; /* Placeholder background */
+}
+
+.book-card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Fill the space without distortion */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.book-card-img-wrapper:hover img {
+    transform: scale(1.1); /* Zoom effect on hover */
+}
+
+.book-card-body {
+    padding: 20px;
+    border-radius: 0 0 15px 15px; /* Rounded corners at the bottom */
+    background-color: var(--light-section); /* Soft background for the text area */
+    color: var(--primary-color)!important;
+}
+
+.book-card-title {
+    font-weight: 600;
+    color: var(--primary-color)!important; /* Ensure primary color for title */
+    font-size: 1.2rem;
+}
+
+.book-card-author {
+    color: var(--secondary-color)!important; /* Author in secondary color */
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.book-card-meta {
+    font-size: 0.9rem;
+    color: var(--primary-color)!important; /* Use standard text color */
+    margin-top: 5px;
+}
+
+.book-card-meta span {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 0.9rem;
+}
+
+.book-card-btn {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.book-card-btn:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--primary-color); /* Ensure the text is visible */
+}
+
+/* Book Detail Page */
+.book-detail-container {
+    background-color: var(--light-section)!important; /* Soft background */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.book-detail-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-color)!important;
+    margin-bottom: 15px;
+}
+
+.book-detail-author,
+.book-detail-genre {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+.book-detail-meta {
+    font-size: 1rem;
+    color: var(--primary-color)!important;
+    margin-bottom: 20px;
+}
+
+.book-detail-description {
+    font-size: 1.1rem;
+    color: var(--text-color)!important;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.book-detail-description p {
+    margin-bottom: 15px;
+}
+
+/* For the Book Cover Image */
+.book-detail-cover-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.book-detail-cover-wrapper img {
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.book-detail-info {
+    flex-grow: 1;
+    padding-left: 20px;
+}
+/* Button Styling */
+.book-detail-btn {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    font-weight: 600;
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.book-detail-btn:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+.section-light {
+    background-color: var(--light-section) !important;
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.footer {
+    background-color: var(--navbar-color) !important;
+    color: var(--text-color);
+    text-align: center;
+    padding: 15px;
+}
