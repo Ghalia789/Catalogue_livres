@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,9 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
+    'crispy_bootstrap5',
     'widget_tweaks',
-    'livres',
+    'livres.apps.LivresConfig',  # Make sure this points to your app config
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,9 +95,16 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'OPTIONS': {
+            'user_attributes': ('username', 'email', 'first_name', 'last_name'),
+            'max_similarity': 0.7,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -117,10 +130,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'livres/statics/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "livres/statics",  # This tells Django where to find static files
+    os.path.join(BASE_DIR, 'static'),  # Note: changed from 'statics' to 'static'
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For production collection
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -130,3 +145,17 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+AUTH_USER_MODEL = 'livres.User'  # Point to your custom user model
+
+# Authentication settings
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home' 
+LOGOUT_REDIRECT_URL = 'home'
+
+# Session settings
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = False  # Set to True in production
+

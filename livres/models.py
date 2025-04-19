@@ -1,5 +1,30 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
+#User model
+class User(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN = 'ADMIN', 'Admin'
+        AUTH_USER = 'AUTH_USER', 'Authenticated User'
+        VISITOR = 'VISITOR', 'Visitor'
+    
+    email = models.EmailField(unique=True)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.VISITOR)
+    #properties for easier permission checking
+    @property
+    def is_admin(self):
+        return self.role == self.Role.ADMIN
+    
+    @property
+    def is_authenticated_user(self):
+        return self.role == self.Role.AUTH_USER
+    def __str__(self):
+        return self.username
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+        
+#Book model
 class Book(models.Model):
     # Genre constants
     FICTION = 'Fiction'
@@ -74,7 +99,13 @@ class Book(models.Model):
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)
     average_rating = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    #Book Ownership Tracking
+    added_by = models.ForeignKey(
+        User,  # References your custom User model
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
     def __str__(self):
         return self.title
     
@@ -85,3 +116,4 @@ class Book(models.Model):
     #    if count > 0:
     #        return total_rating / count
     #    return 0  # Return 0 if there are no reviews yet
+
