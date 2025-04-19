@@ -26,8 +26,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <!-- Left-aligned navigation links -->
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="books">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'book_list' %}">Books</a></li>
                 </ul>
 
                 <!-- Right-aligned auth buttons -->

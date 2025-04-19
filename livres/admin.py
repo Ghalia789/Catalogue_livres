@@ -1,13 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Book, User
+from .models import Book, User, Review  # ✅ Import Review
 
-# Book Admin (keep your existing configuration)
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'genre', 'published_date', 'average_rating', 'created_at', 'added_by')
     list_filter = ('genre', 'published_date', 'added_by')
     search_fields = ('title', 'author')
-    raw_id_fields = ('added_by',)  # Better for large user databases
+    raw_id_fields = ('added_by',)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -15,7 +14,6 @@ class BookAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(added_by=request.user)
 
-# Custom User Admin
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'role', 'is_staff')
     list_filter = ('role', 'is_staff', 'is_superuser')
@@ -34,6 +32,7 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-# Register your models
+# ✅ Register the Review model so you can monitor and debug reviews in the admin
 admin.site.register(Book, BookAdmin)
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Review)
