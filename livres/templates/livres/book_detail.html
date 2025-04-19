@@ -11,7 +11,7 @@
             <!-- Button to Return (Left) -->
             <a href="{% url 'book_list' %}" class="book-detail-btn">Back to Collection</a>
             {# Only show the Edit and Delete buttons if the user is an admin (superuser) #}
-            {#{% if request.user.is_superuser %}#}
+            {% if request.user.role == 'ADMIN' %}
             <!-- Right-aligned Buttons (Edit & Delete) -->
             <div class="d-flex gap-2">
                 <a href="{% url 'book_update' book.id %}" class="btn btn-sm btn-warning d-flex align-items-center justify-content-center rounded-2">
@@ -21,7 +21,7 @@
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
-            {#{% endif %}#}
+            {% endif %}
         </div>
 
         <!-- Book Detail Section -->

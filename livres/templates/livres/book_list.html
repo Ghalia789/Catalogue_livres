@@ -7,9 +7,9 @@
     <h1 class="text-center mb-4" style="color: var(--primary-color);">📚 Book Collection</h1>
 
     {# Add New Book button visible only to admins (optional) #}
-    {# {% if request.user.is_superuser %} #}
+    {% if request.user.role == 'ADMIN' %}
     <a href="{% url 'book_create' %}" class="btn btn-add-book mb-3">➕ Add New Book</a>
-    {# {% endif %} #}
+    {% endif %}
 
     <!-- Filter Form with Improved Styling -->
 <form method="get" class="mb-4">
