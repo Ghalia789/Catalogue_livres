@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth import get_user_model
-from .models import Book
+from .models import Book, Review
 #BookForm
 class BookForm(forms.ModelForm):
     published_date = forms.DateField(
@@ -25,7 +25,7 @@ class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     role = forms.ChoiceField(
         choices=User.Role.choices,
-        initial=User.Role.VISITOR,
+        initial=User.Role.AUTH_USER,
         widget=forms.RadioSelect
     )
 
@@ -62,3 +62,16 @@ class UserSetPasswordForm(SetPasswordForm):
         label="Confirm new password",
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
+    
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.RadioSelect(choices=[(i, str(i)) for i in range(1, 6)]),
+            'comment': forms.Textarea(attrs={
+                'rows': 5,
+                'class': 'form-control',
+                'placeholder': 'Write your thoughts here...'
+            }),        
+        }

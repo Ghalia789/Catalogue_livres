@@ -1,10 +1,11 @@
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, logout
 from django.core.exceptions import PermissionDenied
-from .models import Book, User
-from .forms import BookForm, UserRegisterForm, UserLoginForm
+from .models import Book, User, Review
+from .forms import BookForm, ReviewForm, UserRegisterForm, UserLoginForm
 
 # Helper functions for permissions
 def is_admin(user):
@@ -72,15 +73,17 @@ def book_list(request):
     if published_date:
         books = books.filter(published_date=published_date)
 
+    genres = [genre[0] for genre in Book.GENRE_CHOICES]
     context = {
         'books': books,
         'title_query': title_query,
         'author_query': author_query,
+        "genres": genres,
         'genre_query': genre_query,
         'rating_filter': rating_filter,
         'published_date': published_date,
     }
-    return render(request, 'livres/book_list.html', {'books': books})
+    return render(request, 'livres/book_list.html', context)
 
 # Admin Only: Create Book
 @user_passes_test(is_admin, login_url='/login/')
@@ -132,10 +135,58 @@ def delete_book(request, pk):
         book.delete()
     return redirect(reverse('book_list'))
 #--------------Review--------------
-#@login_required
-#def add_review(request, book_id):
-    # Review form handling here
+@login_required
+def add_review(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
 
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = book
+            review.user = request.user
+            try:
+                review.save()
+                book.update_average_rating()
+                return redirect('book_detail', pk=book.pk)
+            except IntegrityError:
+                form.add_error(None, "You have already reviewed this book.")
+        else:
+            print(form.errors)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'livres/add_review.html', {'form': form, 'book': book})
 #@user_passes_test(is_admin, login_url='/login/')
 #def delete_review(request, review_id):
      # Review form handling here
+     
+@login_required
+def edit_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+
+    # Ensure the logged-in user is the owner of the review
+    if review.user != request.user:
+        return redirect('book_detail', pk=review.book.id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect('book_detail', pk=review.book.id)
+
+    else:
+        form = ReviewForm(instance=review)
+
+    return render(request, 'livres/update_review.html', {'form': form, 'review': review})
+
+
+@login_required
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+
+    # Allow deletion if user is owner or admin
+    if review.user == request.user or request.user.is_superuser or getattr(request.user, 'role', None) == 'ADMIN':
+        review.delete()
+
+    return redirect('book_detail', book_id=review.book.id)

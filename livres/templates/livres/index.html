@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home - Book Catalog{% endblock %}
 
@@ -6,8 +7,43 @@
 <div class="container text-center">
     <div class="card text-center p-4 mt-4">
         <div class="card-body">
-            <h1 class="card-title">Welcome to Book Catalog 📚</h1>
-            <p class="card-text">Search and discover your favorite books!</p>
+            <!-- Logo and Slogan -->
+            <a href="{% url 'home' %}" class="d-flex justify-content-center align-items-center mb-4">
+                <img src="{% static 'images/booktopia-logo-transparent.png' %}" alt="Catalogue Logo" height="200" class="me-3">
+            </a>
+            <p class="card-text">                
+                <img src="{% static 'images/booktopia-slogan.png' %}" alt="Catalogue Slogan" height="80" class="me-3">
+            </p>
+        </div>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">🔍 Discover New Books</h5>
+                    <p class="card-text">Browse a wide collection of books by genre, author, or popularity — your next favorite read is just a click away!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">📝 Leave Reviews</h5>
+                    <p class="card-text">Read what others think and share your own reviews to help fellow readers choose the best books!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">📚 Manage Your Collection</h5>
+                    <p class="card-text">Keep track of books you’ve read and want to read — organize your reading life effortlessly.</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

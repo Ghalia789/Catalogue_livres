@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a Review{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">📝 Share Your Thoughts</h2>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <h4 class="mb-3 text-center">Review: <em class="em-colored">{{ book.title }}</em></h4>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Star Rating -->
+            <div class="mb-3">
+                <label class="form-label">Rating:</label>
+                <div class="star-rating">
+                    {% for i in "54321" %}
+                        <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}">
+                        <label for="star{{ i }}">&#9733;</label>
+                    {% endfor %}
+                </div>
+                {% if form.rating.errors %}
+                    <div class="text-danger">{{ form.rating.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Comment -->
+            <div class="mb-3">
+                <label for="id_comment" class="form-label">Comment (optional):</label>
+                {{ form.comment }}
+                {% if form.comment.errors %}
+                    <div class="text-danger">{{ form.comment.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'book_detail' book.id %}" class="btn btn-secondary">← Back to Book</a>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
