@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 urlpatterns = [
     path('', lambda request: redirect('home', permanent=True)),
+    path('profile/', views.profile_view, name='profile'),
     path('home', views.home, name='home'),
     path('books', views.book_list, name='book_list'),
     
@@ -25,5 +26,6 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('passwordreset/', views.register, name='passwordreset'),
+    path('profile/edit/', views.edit_profile, name='edit_profile')
 ]
 

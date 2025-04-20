@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 #User model
 class User(AbstractUser):
@@ -23,6 +26,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+    
         
 #Book model
 class Book(models.Model):
@@ -116,4 +120,27 @@ class Book(models.Model):
     #    if count > 0:
     #        return total_rating / count
     #    return 0  # Return 0 if there are no reviews yet
+
+class Genre(models.Model):
+    name = models.CharField(max_length=100)
+# UserProfile model
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    bio = models.TextField(blank=True)
+    favorite_genres = models.ManyToManyField(Genre, blank=True)
+    recently_viewed_books = models.ManyToManyField(Book, blank=True)
+    badges = models.JSONField(blank=True, null=True, default=list)
+
+    #def average_rating(self):
+        #return self.user.review_set.aggregate(models.Avg('rating'))['rating__avg']
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+    else:
+        UserProfile.objects.get_or_create(user=instance)
+        instance.userprofile.save()
+
 

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+  <h1>Edit Profile</h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div>
+      <label for="id_bio">Bio:</label><br>
+      {{ form.bio }}
+    </div>
+
+    <div>
+      <label for="id_profile_picture">Profile Picture:</label><br>
+      {% if user.userprofile.profile_picture %}
+        <img src="{{ user.userprofile.profile_picture.url }}" alt="Current Picture" style="max-width:100px;"><br>
+      {% endif %}
+      {{ form.profile_picture }}
+    </div>
+
+    <div>
+      <label for="id_favorite_genres">Favorite Genres:</label><br>
+      {{ form.favorite_genres }}
+    </div>
+
+    <div>
+      <label for="id_badges">Badges:</label><br>
+      {{ form.badges }}
+      <small>(Comma-separated JSON like: ["Top Reviewer", "Early Bird"])</small>
+    </div>
+
+    <button type="submit">Save Changes</button>
+  </form>
+{% endblock %}

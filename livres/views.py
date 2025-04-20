@@ -3,8 +3,8 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, logout
 from django.core.exceptions import PermissionDenied
-from .models import Book, User
-from .forms import BookForm, UserRegisterForm, UserLoginForm
+from .models import Book, User,UserProfile #,Review
+from .forms import BookForm, UserRegisterForm, UserLoginForm, UserProfileForm
 
 # Helper functions for permissions
 def is_admin(user):
@@ -139,3 +139,30 @@ def delete_book(request, pk):
 #@user_passes_test(is_admin, login_url='/login/')
 #def delete_review(request, review_id):
      # Review form handling here
+
+@login_required
+def profile_view(request):
+    user = request.user
+    profile = user.userprofile  # via OneToOneField
+
+    # Fetch all reviews by this user
+    #reviews = Review.objects.filter(user=user).select_related('book')
+
+    return render(request, 'profile.html', {
+        'profile': profile,
+        #'reviews': reviews,
+    })
+
+@login_required
+def edit_profile(request):
+    profile = request.user.userprofile
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # or your named URL for profile
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(request, 'edit_profile.html', {'form': form})

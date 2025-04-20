@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth import get_user_model
-from .models import Book
+from .models import Book, UserProfile
 #BookForm
 class BookForm(forms.ModelForm):
     published_date = forms.DateField(
@@ -62,3 +62,11 @@ class UserSetPasswordForm(SetPasswordForm):
         label="Confirm new password",
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'profile_picture', 'favorite_genres', 'badges']
+        widgets = {
+            'favorite_genres': forms.CheckboxSelectMultiple(),
+            'bio': forms.Textarea(attrs={'rows': 4}),
+        }
