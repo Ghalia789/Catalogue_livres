@@ -9,7 +9,7 @@ class User(AbstractUser):
         VISITOR = 'VISITOR', 'Visitor'
     
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.VISITOR)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.AUTH_USER)
     #properties for easier permission checking
     @property
     def is_admin(self):
@@ -109,11 +109,25 @@ class Book(models.Model):
     def __str__(self):
         return self.title
     
-    #def get_average_rating(self):
-    #    reviews = self.reviews.all()  # Assuming a reverse relationship from Review to Book
-    #    total_rating = sum([review.rating for review in reviews])
-    #    count = len(reviews)
-    #    if count > 0:
-    #        return total_rating / count
-    #    return 0  # Return 0 if there are no reviews yet
+    def get_average_rating(self):
+        reviews = self.reviews.all()  # Assuming a reverse relationship from Review to Book
+        total_rating = sum([review.rating for review in reviews])
+        count = len(reviews)
+        if count > 0:
+            return total_rating / count
+        return 0  # Return 0 if there are no reviews yet
+    def update_average_rating(self):
+        self.average_rating = self.get_average_rating()
+        self.save(update_fields=['average_rating'])
+        
+    
+class Review(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('book', 'user')  # Optional: prevent duplicate reviews by same user
 

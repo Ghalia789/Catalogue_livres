@@ -7,9 +7,9 @@
     <h1 class="text-center mb-4" style="color: var(--primary-color);">📚 Book Collection</h1>
 
     {# Add New Book button visible only to admins (optional) #}
-    {# {% if request.user.is_superuser %} #}
+    {% if request.user.role == 'ADMIN' %}
     <a href="{% url 'book_create' %}" class="btn btn-add-book mb-3">➕ Add New Book</a>
-    {# {% endif %} #}
+    {% endif %}
 
     <!-- Filter Form with Improved Styling -->
 <form method="get" class="mb-4">
@@ -37,7 +37,12 @@
                 <label class="form-label fw-bold" style="color: var(--primary-color) !important;">Genre</label>
                 <div class="input-group">
                     <span class="input-group-text" style="background-color: var(--secondary-color); border-color: var(--secondary-color);">🏷️</span>
-                    <input type="text" name="genre" class="form-control" placeholder="Search by genre" value="{{ genre_query }}" style="border-color: var(--secondary-color);">
+                    <select name="genre" class="form-select" style="border-color: var(--secondary-color);">
+                        <option value="">All Genres</option>
+                        {% for genre in genres %}
+                            <option value="{{ genre }}" {% if genre == genre_query %}selected{% endif %}>{{ genre }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
 

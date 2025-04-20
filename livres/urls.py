@@ -25,5 +25,11 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('passwordreset/', views.register, name='passwordreset'),
+    
+    # Reviews 
+    path('book/<int:book_id>/review/add/',login_required(views.add_review) , name='add_review'),
+    path('review/<int:review_id>/edit/', login_required(views.edit_review), name='edit_review'),
+    path('review/<int:review_id>/delete/', login_required(views.delete_review), name='delete_review'),
+
 ]
 
