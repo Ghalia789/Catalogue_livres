@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, logout
 from django.core.exceptions import PermissionDenied
 from .models import Book, User, Review
-from .forms import BookForm, ReviewForm, UserRegisterForm, UserLoginForm
+from .forms import BookForm, ReviewForm, UserRegisterForm, UserLoginForm, UserProfileForm
 
 # Helper functions for permissions
 def is_admin(user):
@@ -190,3 +190,33 @@ def delete_review(request, review_id):
         review.delete()
 
     return redirect('book_detail', book_id=review.book.id)
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+    profile = user.userprofile  # via OneToOneField
+
+    # Fetch all reviews by this user
+    reviews = Review.objects.filter(user=user).select_related('book')
+
+    return render(request, 'profile.html', {
+        'profile': profile,
+        'reviews': reviews,
+    })
+
+@login_required
+def edit_profile(request):
+    profile = request.user.userprofile
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # ou le nom de ta page profil
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'edit_profile.html', {'form': form})
+
+

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg book-card">
+                <div class="card-header text-center py-4" style="background-color: var(--navbar-color);">
+                    <h2 class="text-white mb-1">{{ user.username }}'s Profile</h2>
+                    <p class="mini-subtitle1 text-light">Explore your literary journey</p>
+                </div>
+                <div class="card-body px-5 py-4">
+
+                    <div class="text-center mb-4">
+                        {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
+                            class="rounded-circle img-thumbnail" style="max-width: 120px;">
+                        {% endif %}
+                    </div>
+
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+
+                    {% if profile.bio %}
+                    <p><strong>Bio:</strong> {{ profile.bio }}</p>
+                    {% endif %}
+
+                    {% if profile.favorite_genres.exists %}
+                    <p><strong>Favorite Genres:</strong> {{ profile.favorite_genres.all|join:", " }}</p>
+                    {% endif %}
+
+                    {% if profile.average_rating %}
+                    <p><strong>Average Rating:</strong> {{ profile.average_rating }}</p>
+                    {% endif %}
+
+                    {% if profile.badges %}
+                    <h5 class="mt-4">Achievements</h5>
+                    <ul class="list-group mb-3">
+                        {% for badge in profile.badges %}
+                        <li class="list-group-item">{{ badge }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if profile.recently_viewed_books.exists %}
+                    <h5>Recently Viewed Books</h5>
+                    <ul class="list-group mb-3">
+                        {% for book in profile.recently_viewed_books.all %}
+                        <li class="list-group-item">{{ book.title }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <h5 class="text-dark">Your Reviews ({{ reviews|length }})</h5>
+                    {% if reviews %}
+                    <ul class="list-group">
+                        {% for review in reviews %}
+                        <li class="list-group-item">
+                            <strong>{{ review.book.title }}</strong><br>
+                            Rating: {{ review.rating }}<br>
+                            {{ review.comment }}<br>
+                            <small class="text-muted">{{ review.created_at|date:"F j, Y" }}</small><br>
+
+                            <a href="{% url 'edit_review' review.id %}" class="btn btn-sm btn-outline-primary mt-1">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </a>
+
+                            <a href="{% url 'delete_review' review.id %}" class="btn btn-sm btn-outline-danger mt-1"
+                                onclick="return confirm('Are you sure you want to delete this review?');">
+                                <i class="fas fa-trash me-1"></i> Delete
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>You haven't reviewed any books yet.</p>
+                    {% endif %}
+
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-edit me-2"></i> Edit Profile
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-5">
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-home me-2"></i> Back to Home
+        </a>
+    </div>
+
+</div>
+{% endblock %}

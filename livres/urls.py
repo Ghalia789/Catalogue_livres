@@ -8,7 +8,8 @@ urlpatterns = [
     path('', lambda request: redirect('home', permanent=True)),
     path('home', views.home, name='home'),
     path('books', views.book_list, name='book_list'),
-    
+    path('profile/', views.profile_view, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
     # Protecting 'create_book' with login_required so only logged-in users can create books
     path('book/create', login_required(views.create_book), name='book_create'),
     

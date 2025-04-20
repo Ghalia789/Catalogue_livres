@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
 
 #User model
 class User(AbstractUser):
@@ -130,4 +133,45 @@ class Review(models.Model):
 
     class Meta:
         unique_together = ('book', 'user')  # Optional: prevent duplicate reviews by same user
+class UserGenre(models.Model):
+    GENRE_CHOICES = [
+        ('Fiction', 'Fiction'),
+        ('Non-Fiction', 'Non-Fiction'),
+        ('Sci-Fi', 'Sci-Fi'),
+        ('Mystery', 'Mystery'),
+        ('Fantasy', 'Fantasy'),
+        ('Biography', 'Biography'),
+        ('Romance', 'Romance'),
+        ('Thriller', 'Thriller'),
+        ('Horror', 'Horror'),
+        ('Young Adult', 'Young Adult'),
+        # Add more if you want
+    ]
+
+    name = models.CharField(max_length=100, choices=GENRE_CHOICES, unique=True)
+
+    def __str__(self):
+        return self.name
+        
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    favorite_genres = models.ManyToManyField(UserGenre, blank=True)
+    badges = models.JSONField(default=list)
+
+    def __str__(self):
+        return self.user.username
+
+    def average_rating(self):
+        return self.user.review_set.aggregate(models.Avg('rating'))['rating__avg']
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+    else:
+        UserProfile.objects.get_or_create(user=instance)
+        instance.userprofile.save()
+
 
