@@ -47,7 +47,7 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install dependencies
-        run: pip install -r requirements-docker.txt pytest pytest-django
+        run: pip install -r requirements.txt pytest pytest-django
 
       - name: Run tests
         run: pytest --ds=catalogue_livre.settings --tb=short -q
@@ -68,7 +68,7 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install dependencies
-        run: pip install -r requirements-docker.txt
+        run: pip install -r requirements.txt
 
       - name: Install security tools
         run: pip install bandit pip-audit
@@ -77,7 +77,7 @@ jobs:
         run: bandit -r . -x ./env,./.venv,./migrations,./staticfiles -ll
 
       - name: Run pip-audit
-        run: pip-audit -r requirements-docker.txt || true
+        run: pip-audit -r requirements.txt || true
 
   sonarqube:
     name: SonarQube Analysis
@@ -124,7 +124,7 @@ jobs:
         run: docker load -i image.tar
 
       - name: Run Trivy scan
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           severity: CRITICAL,HIGH
