@@ -132,16 +132,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Note: changed from 'statics' to 'static'
+    # Note: changed from 'statics' to 'static'
+    os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For production collection
+# For production collection
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -150,7 +151,7 @@ AUTH_USER_MODEL = 'livres.User'  # Point to your custom user model
 
 # Authentication settings
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home' 
+LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 # Session settings
@@ -158,4 +159,3 @@ SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
 SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = False  # Set to True in production
-
