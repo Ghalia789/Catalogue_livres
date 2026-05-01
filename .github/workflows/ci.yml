@@ -1,0 +1,91 @@
+name: CI Pipeline — Catalogue Livres
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+env:
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/catalogue-livres
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install flake8
+      - run: flake8 . --max-line-length=120 --exclude=migrations,env,staticfiles
+
+  tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -r requirements.txt pytest pytest-django
+      - run: pytest --ds=catalogue_livres.settings --tb=short -q
+
+  security-code:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install bandit safety
+      - run: bandit -r . -x ./env,./migrations,./staticfiles -ll
+      - run: safety check -r requirements.txt
+
+  sonarqube:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  docker-build:
+    needs: [tests, security-code]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+      - run: docker save ${{ env.IMAGE_NAME }}:${{ github.sha }} -o image.tar
+      - uses: actions/upload-artifact@v4
+        with: { name: docker-image, path: image.tar }
+
+  trivy-scan:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: docker-image }
+      - run: docker load -i image.tar
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          exit-code: '1'
+          severity: 'CRITICAL'
+          format: 'table'
+
+  docker-push:
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: docker-image }
+      - run: docker load -i image.tar
+      - run: |
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.IMAGE_NAME }}:latest

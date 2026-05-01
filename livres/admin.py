@@ -2,8 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import Book, User, Review  # ✅ Import Review
 
+
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'genre', 'published_date', 'average_rating', 'created_at', 'added_by')
+    list_display = ('title', 'author', 'genre', 'published_date',
+                    'average_rating', 'created_at', 'added_by')
     list_filter = ('genre', 'published_date', 'added_by')
     search_fields = ('title', 'author')
     raw_id_fields = ('added_by',)
@@ -13,6 +15,7 @@ class BookAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(added_by=request.user)
+
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'role', 'is_staff')
@@ -31,6 +34,7 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('username', 'email', 'password1', 'password2', 'role'),
         }),
     )
+
 
 # ✅ Register the Review model so you can monitor and debug reviews in the admin
 admin.site.register(Book, BookAdmin)

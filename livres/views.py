@@ -8,13 +8,18 @@ from .models import Book, User, Review
 from .forms import BookForm, ReviewForm, UserRegisterForm, UserLoginForm, UserProfileForm
 
 # Helper functions for permissions
+
+
 def is_admin(user):
     return user.is_authenticated and user.role == User.Role.ADMIN
+
 
 def is_authenticated_user(user):
     return user.is_authenticated and user.role == User.Role.AUTH_USER
 
 # Auth Views
+
+
 def register(request):
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
@@ -24,8 +29,9 @@ def register(request):
             return redirect('home')
     else:
         form = UserRegisterForm()
-    
+
     return render(request, 'registration/register.html', {'form': form})
+
 
 def user_login(request):
     if request.method == "POST":
@@ -36,15 +42,18 @@ def user_login(request):
             return redirect('home')
     else:
         form = UserLoginForm()
-    
+
     return render(request, 'registration/login.html', {'form': form})
+
 
 def user_logout(request):
     logout(request)
     return redirect('home')
 
+
 def home(request):
     return render(request, 'livres/index.html')
+
 
 def book_list(request):
     books = Book.objects.all()
@@ -86,13 +95,15 @@ def book_list(request):
     return render(request, 'livres/book_list.html', context)
 
 # Admin Only: Create Book
+
+
 @user_passes_test(is_admin, login_url='/login/')
 def create_book(request):
     if request.method == "POST":
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             book = form.save(commit=False)
-            #book.added_by = request.user  # Track who added the book
+            # book.added_by = request.user  # Track who added the book
             book.save()
             return redirect('book_list')
     else:
@@ -100,6 +111,8 @@ def create_book(request):
     return render(request, 'livres/create_book.html', {'form': form})
 
 # View Book Detail (Editable by owner or admin)
+
+
 def book_detail(request, pk):
     book = get_object_or_404(Book, pk=pk)
     can_edit = request.user == book.added_by or is_admin(request.user)
@@ -109,14 +122,16 @@ def book_detail(request, pk):
     })
 
 # Update Book (Only by admin or the user who added it)
+
+
 @login_required
 def book_update(request, id):
     book = get_object_or_404(Book, id=id)
-    
+
     # Permission check
     if not (request.user == book.added_by or is_admin(request.user)):
         raise PermissionDenied
-    
+
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
@@ -128,13 +143,17 @@ def book_update(request, id):
     return render(request, 'livres/book_update.html', {'form': form, 'book': book})
 
 # Admin Only: Delete Book
+
+
 @user_passes_test(is_admin, login_url='/login/')
 def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == "POST":
         book.delete()
     return redirect(reverse('book_list'))
-#--------------Review--------------
+# --------------Review--------------
+
+
 @login_required
 def add_review(request, book_id):
     book = get_object_or_404(Book, id=book_id)
@@ -157,10 +176,11 @@ def add_review(request, book_id):
         form = ReviewForm()
 
     return render(request, 'livres/add_review.html', {'form': form, 'book': book})
-#@user_passes_test(is_admin, login_url='/login/')
-#def delete_review(request, review_id):
-     # Review form handling here
-     
+# @user_passes_test(is_admin, login_url='/login/')
+# def delete_review(request, review_id):
+    # Review form handling here
+
+
 @login_required
 def edit_review(request, review_id):
     review = get_object_or_404(Review, id=review_id)
@@ -205,18 +225,17 @@ def profile_view(request):
         'reviews': reviews,
     })
 
+
 @login_required
 def edit_profile(request):
     profile = request.user.userprofile
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('profile')  # ou le nom de ta page profil
     else:
-        form = ProfileForm(instance=profile)
+        form = UserProfileForm(instance=profile)
 
     return render(request, 'edit_profile.html', {'form': form})
-
-
