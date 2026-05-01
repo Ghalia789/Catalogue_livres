@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue-livres
+  namespace: catalogue-livres
+spec:
+  selector:
+    app: catalogue-livres
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: NodePort
