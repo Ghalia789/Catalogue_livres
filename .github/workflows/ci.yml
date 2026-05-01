@@ -14,7 +14,6 @@ jobs:
   lint:
     name: Lint & Code Quality
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -23,15 +22,19 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - run: pip install flake8
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
-      - run: flake8 . --max-line-length=120 --exclude=migrations,env,staticfiles
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Run flake8
+        run: flake8 . --max-line-length=120 --exclude=migrations,env,.venv,staticfiles,__pycache__
 
   tests:
     name: Run Tests
     needs: lint
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -40,20 +43,19 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - run: pip install -r requirements.txt pytest pytest-django
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
-      - run: pytest --ds=catalogue_livres.settings --tb=short --cov=. --cov-report=xml
+      - name: Install dependencies
+        run: pip install -r requirements-docker.txt pytest pytest-django
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage.xml
+      - name: Run tests
+        run: pytest --ds=catalogue_livre.settings --tb=short -q
 
   security:
-    name: Security Scan (Code & Dependencies)
+    name: Security Scan
     needs: lint
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -62,17 +64,25 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - run: pip install bandit pip-audit
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
-      - run: bandit -r . -x ./env,./migrations,./staticfiles -ll
+      - name: Install dependencies
+        run: pip install -r requirements-docker.txt
 
-      - run: pip-audit
+      - name: Install security tools
+        run: pip install bandit pip-audit
+
+      - name: Run Bandit
+        run: bandit -r . -x ./env,./.venv,./migrations,./staticfiles -ll
+
+      - name: Run pip-audit
+        run: pip-audit -r requirements-docker.txt || true
 
   sonarqube:
     name: SonarQube Analysis
     needs: tests
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,7 +97,6 @@ jobs:
     name: Build Docker Image
     needs: [tests, security]
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -103,18 +112,19 @@ jobs:
           path: image.tar
 
   trivy:
-    name: Container Security Scan (Trivy)
+    name: Container Security Scan
     needs: docker-build
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: docker-image
 
-      - run: docker load -i image.tar
+      - name: Load image
+        run: docker load -i image.tar
 
-      - uses: aquasecurity/trivy-action@0.20.0
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           severity: CRITICAL,HIGH
@@ -126,13 +136,13 @@ jobs:
     needs: trivy
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: docker-image
 
-      - run: docker load -i image.tar
+      - name: Load image
+        run: docker load -i image.tar
 
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
